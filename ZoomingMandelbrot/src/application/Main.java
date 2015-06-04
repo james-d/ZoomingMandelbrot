@@ -1,5 +1,14 @@
 package application;
 
+import static javafx.scene.input.KeyCode.H;
+import static javafx.scene.input.KeyCode.J;
+import static javafx.scene.input.KeyCode.Q;
+import static javafx.scene.input.KeyCode.R;
+import static javafx.scene.input.KeyCode.S;
+import static javafx.scene.input.KeyCode.Z;
+import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
+import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +22,10 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 
 public class Main extends Application {
 
@@ -22,6 +33,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        
+        model.setErrorHandler((message, exception) -> 
+            new ErrorDialog(message, exception, primaryStage).show());
         
         Callback<Class<?>, Object> controllerFactory = type -> {
             try {
@@ -34,9 +48,7 @@ public class Main extends Application {
                 }
                 return type.newInstance();
             } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-                return null;
+                throw new RuntimeException(e);
             }
         };
 
@@ -45,7 +57,7 @@ public class Main extends Application {
         BorderPane root = loader.load();
         MandelbrotExplorerController controller = loader.getController();
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, Color.TRANSPARENT);
         setUpKeyboardShortcuts(scene, controller);
 
         scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -65,35 +77,30 @@ public class Main extends Application {
             MandelbrotExplorerController controller) {
 
         List<KeyboardAction> actions = Arrays.asList(
-                new KeyboardAction(() -> model.setTrackingJuliaSet(!model
-                        .isTrackingJuliaSet()), KeyCode.J,
-                        KeyCombination.SHORTCUT_DOWN),
+                
+                new KeyboardAction(() -> model.setTrackingJuliaSet(!model.isTrackingJuliaSet()), 
+                        J, SHORTCUT_DOWN),
 
-                new KeyboardAction(() -> model.setReverseZoomAction(!model
-                        .isReverseZoomAction()), KeyCode.Z,
-                        KeyCombination.SHORTCUT_DOWN),
+                new KeyboardAction(() -> model.setReverseZoomAction(!model.isReverseZoomAction()), 
+                        Z, SHORTCUT_DOWN),
 
-                new KeyboardAction(model::reset, KeyCode.R,
-                        KeyCombination.SHORTCUT_DOWN),
+                new KeyboardAction(model::reset, R, SHORTCUT_DOWN),
 
                 new KeyboardAction(() -> controller.saveMandelbrotImage(scene),
-                        KeyCode.S, KeyCombination.SHORTCUT_DOWN),
+                        S, SHORTCUT_DOWN),
 
                 new KeyboardAction(() -> controller.saveJuliaSetImage(scene),
-                        KeyCode.S, KeyCombination.SHORTCUT_DOWN,
-                        KeyCombination.SHIFT_DOWN),
+                        S, SHORTCUT_DOWN, SHIFT_DOWN),
 
-                new KeyboardAction(
-                        () -> controller.showHelp(scene.getWindow()),
-                        KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+                new KeyboardAction(() -> controller.showHelp(scene.getWindow()), 
+                        H, SHORTCUT_DOWN),
 
-                new KeyboardAction(Platform::exit, KeyCode.Q,
-                        KeyCombination.SHORTCUT_DOWN)
+                new KeyboardAction(Platform::exit, Q, SHORTCUT_DOWN)
 
         );
 
-        scene.setOnKeyPressed(e -> actions.forEach(action -> action
-                .runIfMatches(e)));
+        scene.setOnKeyPressed(e -> 
+            actions.forEach(action -> action.runIfMatches(e)));
 
     }
 

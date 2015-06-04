@@ -1,7 +1,5 @@
 package application;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -10,13 +8,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
 
 public class MandelbrotExplorerController {
+    @FXML
+    private Parent root ;
     @FXML
     private ImageView mandelbrotView;
     @FXML
@@ -25,6 +28,9 @@ public class MandelbrotExplorerController {
     private Rectangle zoomRect;
     @FXML
     private ImageView juliaView;
+    
+    @FXML
+    private ContextMenu contextMenu ;
 
     @FXML
     private ControlPanelController controlPanelController;
@@ -46,6 +52,14 @@ public class MandelbrotExplorerController {
                         .setImage(newMandelbrot.getImage()));
         mandelbrotView.disableProperty()
                 .bind(model.zoomingInProgressProperty());
+        
+        model.currentJuliaSetProperty().addListener((obs, oldJuliaSet, newJuliaSet) -> {
+            if (newJuliaSet != null) {
+                juliaView.setImage(newJuliaSet.getImage());
+            }
+        });
+        
+        setUpContextMenu();
 
         setUpJuliaSetTracking();
         setUpMandelbrotUpdating();
@@ -101,6 +115,11 @@ public class MandelbrotExplorerController {
         }
 
     }
+    
+    private void setUpContextMenu() {
+        root.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, 
+                e -> contextMenu.show(root, e.getScreenX(), e.getScreenY()));
+    }
 
     private void bindZoomingRectangles() {
         ChangeListener<Number> updateZoomRect = (obs, oldValue, newValue) -> {
@@ -126,11 +145,12 @@ public class MandelbrotExplorerController {
     }
 
     private void setUpJuliaSetTracking() {
-
-        AtomicBoolean juliaComputing = new AtomicBoolean();
+        
+        class Flag { boolean status ; }
+        Flag juliaComputing = new Flag();
 
         mandelbrotView.setOnMouseMoved(e -> {
-            if (model.isTrackingJuliaSet() && juliaComputing.compareAndSet(false, true)) {
+            if (model.isTrackingJuliaSet() && ! juliaComputing.status) {
                 
                 Bounds bounds = model.getCurrentMandelbrot().getBounds();
                 final double cx = bounds.getWidth() * e.getX() / Model.VIEW_WIDTH + bounds.getMinX();
@@ -138,8 +158,8 @@ public class MandelbrotExplorerController {
                 
                 model.computeJuliaSet(cx, cy, 50,
                     juliaSet -> Platform.runLater(() -> {
-                        juliaView.setImage(juliaSet.getImage());
-                        juliaComputing.set(false);
+                        model.setJuliaSet(juliaSet);
+                        juliaComputing.status = false ;
                     }));
             }
         });

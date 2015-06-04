@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.beans.property.BooleanProperty;
@@ -23,6 +23,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 
+/**
+ * Model class for the Mandelbrot explorer. This class is single-threaded: unless otherwise noted
+ * all methods in this class should be executed on a single thread, or external synchronization should
+ * be applied. The exceptions to this rule are the methods <code>getViewQueue</code>,  
+ * <code>computeJuliaSet</code>, <code>reset</code>, and <code>shutdown</code>.
+ */
 public class Model {
     public static final double ZOOM_FACTOR = 4.0;
     public static final int VIEW_WIDTH = 400;
@@ -31,7 +37,7 @@ public class Model {
     public static final int ANIMATION_FRAMES = 15;
 
     private final ObjectProperty<MandelbrotView> currentMandelbrot = new SimpleObjectProperty<>();
-    private final AtomicReference<JuliaSetView> currentJuliaSet = new AtomicReference<>();
+    private final ObjectProperty<JuliaSetView> currentJuliaSet = new SimpleObjectProperty<>();
 
     private final int PARALLELIZATION_LEVEL = Runtime.getRuntime().availableProcessors() ;
     
@@ -53,6 +59,8 @@ public class Model {
     private BooleanProperty trackingJuliaSet = new SimpleBooleanProperty();
     private BooleanProperty reverseZoomAction = new SimpleBooleanProperty();
     private BooleanProperty guessIteration = new SimpleBooleanProperty();
+    
+    private BiConsumer<String, Exception> errorHandler ;
 
     /*
      * ============
@@ -92,32 +100,15 @@ public class Model {
         return zoomingInProgressProperty().get();
     }
 
-    /**
-     * The currently displayed MandelbrotView. 
-     * <strong>Thread Safety:</strong> Access to this property must be restricted to a single thread.
-     * The <code>startZoom(...)</code> accesses this property and must be called on the same thread.
-     * @return
-     */
+
     public final ObjectProperty<MandelbrotView> currentMandelbrotProperty() {
         return this.currentMandelbrot;
     }
 
-    /**
-     * The currently displayed MandelbrotView. 
-     * <strong>Thread Safety:</strong> Access to this property must be restricted to a single thread.
-     * The <code>startZoom(...)</code> accesses this property and must be called on the same thread.
-     * @return
-     */
     public final MandelbrotView getCurrentMandelbrot() {
         return this.currentMandelbrotProperty().get();
     }
 
-    /**
-     * Update the currently displayed MandelbrotView. 
-     * <strong>Thread Safety:</strong> Access to this property must be restricted to a single thread.
-     * The <code>startZoom(...)</code> accesses this property and must be called on the same thread.
-     * @return
-     */
     public final void setCurrentMandelbrot(final MandelbrotView currentMandelbrot) {
         this.currentMandelbrotProperty().set(currentMandelbrot);
     }
@@ -179,6 +170,20 @@ public class Model {
         this.frameCountProperty().set(framesPerSecond);
     }
 
+
+    public ObjectProperty<JuliaSetView> currentJuliaSetProperty() {
+        return currentJuliaSet ;
+    }
+    
+    public final JuliaSetView getCurrentJuliaSet() {
+        return currentJuliaSetProperty().get() ;
+    }
+    
+    public final void setJuliaSet(JuliaSetView juliaSet) {
+        currentJuliaSetProperty().set(juliaSet);
+    }
+
+    
     /*
      * ==========
      * Public API
@@ -186,19 +191,26 @@ public class Model {
      */
     
     /**
-     * 
+     * This method may be called from any thread.
      * @return A queue of computed MandelbrotViews ready for rendering
      */
     public BlockingQueue<MandelbrotView> getViewQueue() {
         return viewQueue;
     }
     
-    /**
-     * 
-     * @return The current JuliaSetView, or null if no JuliaSet is displayed.
-     */
-    public JuliaSetView getCurrentJuliaSet() {
-        return currentJuliaSet.get() ;
+
+    public BiConsumer<String, Exception> getErrorHandler() {
+        return errorHandler ;
+    }
+    
+    public void setErrorHandler(BiConsumer<String, Exception> handler) {
+        this.errorHandler = handler ;
+    }
+    
+    public void errorOccurred(String message, Exception exc) {
+        if (errorHandler != null) {
+            errorHandler.accept(message, exc);
+        }
     }
 
     /**
@@ -210,31 +222,27 @@ public class Model {
     }
 
     /**
-     * Gracefully shutdown.
+     * Gracefully shutdown. This method may be called from any thread.
      */
     public void shutdown() {
         exec.shutdown();
     }
 
     /**
-     * Reset to the default image. No zooming is performed.
+     * Reset to the default image. No zooming is performed. This method may be called from any thread.
      */
     public void reset() {
-        exec.execute(() -> {
-            try {
-                computationQueue.put(createMandelbrotView(-0.5, 0, 3, 3, 50));
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-            }
-        });
+        try {
+            computationQueue.put(createMandelbrotView(-0.5, 0, 3, 3, 50));
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
      * Zoom to a new location, based on the pixel coordinates in the space
      * of <code>getCurrentMandelbrot().getImage()</code>.
-     * <strong>Thread safety:</strong> This method must be called from a single thread. It references the
-     * <code>currentMandelbrotProperty()</code>, so any other references to that property must be performed on the
-     * same thread. This method creates the MandelbrotViews and schedules them for computation on a background
+     * This method creates the MandelbrotViews and schedules them for computation on a background
      * thread, placing them in the `viewQueue` when computation is complete.
      * @param pixelX x-coordinate of the center of the target zoom, in pixel coordinate space of the current view.
      * @param pixelY y-coordinate of the center of the target zoom, in pixel coordinate space of the current view.
@@ -284,6 +292,11 @@ public class Model {
     /**
      * Compute a new JuliaSetView in a background thread. When computation is complete,
      * the JuliaSetView is passed to the <code>whenFinished</code> callback.
+     * This method may be called from any thread; <code>whenFinished.accept(..)</code>
+     * will however be called from a background thread.
+     * Note that this method will not update the currentJuliaSetProperty. It is the
+     * responsibility of the <code>whenFinished</code> to do so, with appropriate
+     * regard to threading concerns, if required.
      * @param cx The x-value in the complex plane for the Julia Set.
      * @param cy The y-value in the complex plane for the Julia Set.
      * @param iterationLevel The maximum number of iterations used in the computation.

@@ -92,11 +92,9 @@ public class ActionController {
             try {
                 String fileName = file.toString();
                 String format = fileName.substring(fileName.lastIndexOf('.') + 1);
-                System.out.println(format);
                 ImageIO.write(SwingFXUtils.fromFXImage(image, null), format, file);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                model.errorOccurred("An error occurred saving the image", e);
             }
         }
     }
