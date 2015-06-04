@@ -15,7 +15,6 @@ public abstract class FractalView {
 
     private static final int[] PALETTE = createDefaultPalette();
 
-    private static final int PARALLELIZATION_LEVEL = Runtime.getRuntime().availableProcessors();
 
     protected abstract int computeIterationCount(double x, double y,
             int maxIterations);
@@ -25,16 +24,14 @@ public abstract class FractalView {
     private final int height;
     private final Bounds bounds;
     private final WritableImage image;
-    private final Executor exec;
     private AtomicInteger minComputedIterations = new AtomicInteger(Integer.MAX_VALUE);
     private AtomicInteger maxComputedIterations = new AtomicInteger(Integer.MIN_VALUE);
 
-    public FractalView(int width, int height, Bounds bounds, int maxIterations, Executor exec) {
+    public FractalView(int width, int height, Bounds bounds, int maxIterations) {
         this.width = width;
         this.height = height;
         this.bounds = bounds;
         this.maxIterations = maxIterations;
-        this.exec = exec;
 
         this.image = new WritableImage(width, height);
     }
@@ -83,9 +80,9 @@ public abstract class FractalView {
         return maxComputedIterations.get();
     }
 
-    public void compute() {
+    public void compute(Executor exec, int parallelizationLevel) {
 
-        final int numStrips = PARALLELIZATION_LEVEL;
+        final int numStrips = parallelizationLevel;
         final int[] boundaries = new int[numStrips + 1];
         for (int i = 0; i <= numStrips; i++) {
             boundaries[i] = i * height / numStrips;

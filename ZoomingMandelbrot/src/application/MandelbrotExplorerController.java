@@ -3,6 +3,7 @@ package application;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -28,7 +29,7 @@ public class MandelbrotExplorerController {
     @FXML
     private ControlPanelController controlPanelController;
     @FXML
-    private ContextMenuController contextMenuController;
+    private ActionController contextMenuController;
 
     private final Model model;
 
@@ -43,9 +44,6 @@ public class MandelbrotExplorerController {
         model.currentMandelbrotProperty().addListener(
                 (obs, oldMandelbrot, newMandelbrot) -> mandelbrotView
                         .setImage(newMandelbrot.getImage()));
-        model.currentJuliaSetProperty().addListener(
-                (obs, oldJulia, newJulia) -> juliaView.setImage(model
-                        .getCurrentJuliaSet().getImage()));
         mandelbrotView.disableProperty()
                 .bind(model.zoomingInProgressProperty());
 
@@ -133,11 +131,16 @@ public class MandelbrotExplorerController {
 
         mandelbrotView.setOnMouseMoved(e -> {
             if (model.isTrackingJuliaSet() && juliaComputing.compareAndSet(false, true)) {
+                
                 Bounds bounds = model.getCurrentMandelbrot().getBounds();
                 final double cx = bounds.getWidth() * e.getX() / Model.VIEW_WIDTH + bounds.getMinX();
                 final double cy = bounds.getHeight() * (1 - e.getY() / Model.VIEW_HEIGHT) + bounds.getMinY();
+                
                 model.computeJuliaSet(cx, cy, 50,
-                        () -> juliaComputing.set(false));
+                    juliaSet -> Platform.runLater(() -> {
+                        juliaView.setImage(juliaSet.getImage());
+                        juliaComputing.set(false);
+                    }));
             }
         });
     }
@@ -150,8 +153,6 @@ public class MandelbrotExplorerController {
                 MandelbrotView mandelbrot = model.getViewQueue().poll();
                 if (mandelbrot != null) {
                     model.setFrameCount(model.getFrameCount() + 1);
-                    model.setFramesPendingRendering(model
-                            .getFramesPendingRendering() - 1);
                     model.setCurrentMandelbrot(mandelbrot);
                 }
             }

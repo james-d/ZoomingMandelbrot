@@ -1,14 +1,12 @@
 package application;
 
-import java.util.concurrent.Executor;
-
 import javafx.geometry.Bounds;
 
 public class MandelbrotView extends FractalView {
 
     public MandelbrotView(int width, int height, Bounds bounds,
-            int maxIterations, Executor exec) {
-        super(width, height, bounds, maxIterations, exec);
+            int maxIterations) {
+        super(width, height, bounds, maxIterations);
     }
 
     @Override

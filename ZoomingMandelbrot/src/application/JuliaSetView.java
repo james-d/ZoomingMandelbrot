@@ -1,7 +1,5 @@
 package application;
 
-import java.util.concurrent.Executor;
-
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 
@@ -13,8 +11,8 @@ public class JuliaSetView extends FractalView {
     private static final Bounds BOUNDS = new BoundingBox(-2, -2, 4, 4);
 
     public JuliaSetView(int width, int height, int maxIterations,
-            Executor exec, double cx, double cy) {
-        super(width, height, BOUNDS, maxIterations, exec);
+            double cx, double cy) {
+        super(width, height, BOUNDS, maxIterations);
         this.cx = cx;
         this.cy = cy;
     }

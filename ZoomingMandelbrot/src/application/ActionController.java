@@ -24,7 +24,7 @@ import javafx.stage.Window;
 
 import javax.imageio.ImageIO;
 
-public class ContextMenuController {
+public class ActionController {
     @FXML
     private ContextMenu menu;
     @FXML
@@ -39,7 +39,7 @@ public class ContextMenuController {
 
     private final Model model;
 
-    public ContextMenuController(Model model) {
+    public ActionController(Model model) {
         this.model = model;
     }
 
@@ -75,7 +75,7 @@ public class ContextMenuController {
     }
 
     void saveJuliaSetImage(Scene scene) {
-        if (model.getCurrentMandelbrot() != null) {
+        if (model.getCurrentJuliaSet() != null) {
             saveImage(model.getCurrentJuliaSet().getImage(), scene.getWindow(),
                     "Save Julia Set Image");
         }

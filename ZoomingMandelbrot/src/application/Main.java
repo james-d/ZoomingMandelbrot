@@ -22,7 +22,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        
         Callback<Class<?>, Object> controllerFactory = type -> {
             try {
                 for (Constructor<?> c : type.getConstructors()) {

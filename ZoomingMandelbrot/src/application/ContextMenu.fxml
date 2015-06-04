@@ -5,7 +5,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 
 <ContextMenu xmlns:fx="http://javafx.com/fxml/1" fx:id="menu"
-	fx:controller="application.ContextMenuController">
+	fx:controller="application.ActionController">
 	<items>
 		<CheckMenuItem text="Track Julia Set" fx:id="trackJuliaSet" selected="true" />
 		<CheckMenuItem text="Reverse Zoom" fx:id="reverseZoom" />
