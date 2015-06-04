@@ -7,35 +7,34 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.paint.Color?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MandelbrotExplorerController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="application.MandelbrotExplorerController">
 	<center>
 		<HBox spacing="5">
 			<Pane>
-				<ImageView fitHeight="400" fitWidth="400" fx:id="mandelbrotView" 
-					onMouseClicked="#zoomByClick"
-					onDragDetected="#startDragging"
-					onMouseDragged="#drag"
-					onMouseReleased="#zoomByDrag" />
-					
+				<ImageView fitHeight="400" fitWidth="400" fx:id="mandelbrotView"
+					onMouseClicked="#zoomByClick" onDragDetected="#startDragging"
+					onMouseDragged="#drag" onMouseReleased="#zoomByDrag" />
+
 				<Rectangle fx:id="zoomRect">
 					<fill>
-						<Color red="1.0" green="1.0" blue="1.0" opacity="0.75"/>
+						<Color red="1.0" green="1.0" blue="1.0" opacity="0.75" />
 					</fill>
 				</Rectangle>
-				<Rectangle fx:id="dragRect" >
+				<Rectangle fx:id="dragRect">
 					<fill>
-						<Color red="1.0" green="1.0" blue="1.0" opacity="0.75"/>
+						<Color red="1.0" green="1.0" blue="1.0" opacity="0.75" />
 					</fill>
 				</Rectangle>
 			</Pane>
-			<ImageView fitHeight="400" fitWidth="400" fx:id="juliaView"/>
+			<ImageView fitHeight="400" fitWidth="400" fx:id="juliaView" />
 		</HBox>
 	</center>
-	
+
 	<bottom>
-		<fx:include fx:id="controlPanel" source="ControlPanel.fxml"/>
+		<fx:include fx:id="controlPanel" source="ControlPanel.fxml" />
 	</bottom>
-	
+
 	<fx:define>
 		<fx:include fx:id="contextMenu" source="ContextMenu.fxml" />
 	</fx:define>

@@ -4,13 +4,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 
-<ContextMenu xmlns:fx="http://javafx.com/fxml/1" fx:id="menu" fx:controller="application.ContextMenuController">
+<ContextMenu xmlns:fx="http://javafx.com/fxml/1" fx:id="menu"
+	fx:controller="application.ContextMenuController">
 	<items>
 		<CheckMenuItem text="Track Julia Set" fx:id="trackJuliaSet" selected="true" />
-		<CheckMenuItem text="Reverse Zoom" fx:id="reverseZoom"/>
+		<CheckMenuItem text="Reverse Zoom" fx:id="reverseZoom" />
 		<MenuItem text="Reset" onAction="#reset" fx:id="reset" />
 		<SeparatorMenuItem />
-		<MenuItem text="Save Mandelbrot Image" onAction="#saveMandelbrotImage"/>
+		<MenuItem text="Save Mandelbrot Image" onAction="#saveMandelbrotImage" />
 		<MenuItem text="Save Julia Set Image" onAction="#saveJuliaSetImage" />
 		<SeparatorMenuItem />
 		<MenuItem text="Help" onAction="#showHelp" />

@@ -11,14 +11,14 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" spacing="5" fx:id="root"
 	fx:controller="application.ControlPanelController" styleClass="controls">
-	
+
 	<Label fx:id="sizeLabel" />
 	<Label fx:id="fpsLabel" />
 	<HBox spacing="10" styleClass="controls">
-		<Label text="Iteration Level: "/>
+		<Label text="Iteration Level: " />
 		<TextField fx:id="iterationTextField" />
 		<CheckBox text="Guess" fx:id="guessIterationLevel" selected="true" />
 	</HBox>
-	<ProgressBar fx:id="renderProgressBar"/>
+	<ProgressBar fx:id="renderProgressBar" />
 </VBox>
 

@@ -18,31 +18,31 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class ControlPanelController {
 
-    private final Model model ;
-    
+    private final Model model;
+
     @FXML
-    private Pane root ;
+    private Pane root;
     @FXML
-    private Label sizeLabel ;
+    private Label sizeLabel;
     @FXML
-    private Label fpsLabel ;
+    private Label fpsLabel;
     @FXML
-    private TextField iterationTextField ;
+    private TextField iterationTextField;
     @FXML
-    private CheckBox guessIterationLevel ;
+    private CheckBox guessIterationLevel;
     @FXML
-    private ProgressBar renderProgressBar ;
-    
-    private TextFormatter<Integer> iterationLevelFormatter ;
-    
+    private ProgressBar renderProgressBar;
+
+    private TextFormatter<Integer> iterationLevelFormatter;
+
     public ControlPanelController(Model model) {
-        this.model = model ;
+        this.model = model;
     }
-    
+
     public void initialize() {
-        
+
         root.disableProperty().bind(model.zoomingInProgressProperty());
-        
+
         setUpSizeLabelBinding();
         setUpFrameCount();
         setupIterationControl();
@@ -50,50 +50,53 @@ public class ControlPanelController {
     }
 
     private void setUpSizeLabelBinding() {
-        model.currentMandelbrotProperty().addListener((obs, oldMandelbrot, newMandelbrot) -> {
-            sizeLabel.setText(String.format("Size: %.2g", newMandelbrot.getBounds().getWidth()));
-        });
+        model.currentMandelbrotProperty().addListener(
+                (obs, oldMandelbrot, newMandelbrot) -> 
+                    sizeLabel.setText(String.format("Size: %.2g", newMandelbrot.getBounds().getWidth())));
     }
-    
+
     private void setUpFrameCount() {
-        
-        Timeline fpsMeter = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> {
-            fpsLabel.setText("Frames per second: " + model.getFrameCount() * 5);
-            model.setFrameCount(0);
-        }));
-        
+
+        Timeline fpsMeter = new Timeline(new KeyFrame(Duration.seconds(0.2),
+                e -> {
+                    fpsLabel.setText("Frames per second: "+ model.getFrameCount() * 5);
+                    model.setFrameCount(0);
+                }));
+
         fpsMeter.setCycleCount(Animation.INDEFINITE);
-        
-        fpsMeter.play();        
+
+        fpsMeter.play();
     }
 
     private void setupIterationControl() {
         model.guessIterationProperty().bindBidirectional(guessIterationLevel.selectedProperty());
-        
+
         iterationLevelFormatter = new TextFormatter<Integer>(new IntegerStringConverter());
         iterationLevelFormatter.setValue(50);
-                
-        iterationTextField.textProperty().addListener((obs, oldValue, newValue) -> iterationTextField.commitValue());
+
+        iterationTextField.textProperty().addListener(
+                (obs, oldValue, newValue) -> iterationTextField.commitValue());
         iterationTextField.setTextFormatter(iterationLevelFormatter);
-        iterationTextField.disableProperty().bind(model.guessIterationProperty());
-        
-        model.currentMandelbrotProperty().addListener((obs, oldMandelbrot, newMandelbrot) -> 
-            iterationLevelFormatter.setValue(newMandelbrot.getIterationLevel()));
-    }
-    
-    private void setupProgressBarBinding() {
-        renderProgressBar.progressProperty().bind(Bindings.createDoubleBinding(() -> 
-        model.getRenderProgress(), 
-        model.framesPendingRenderingProperty()));
+        iterationTextField.disableProperty().bind(
+                model.guessIterationProperty());
+
+        model.currentMandelbrotProperty().addListener(
+                (obs, oldMandelbrot, newMandelbrot) -> 
+                    iterationLevelFormatter.setValue(newMandelbrot.getIterationLevel()));
     }
 
-    
+    private void setupProgressBarBinding() {
+        renderProgressBar.progressProperty().bind(
+                Bindings.createDoubleBinding(() -> model.getRenderProgress(),
+                        model.framesPendingRenderingProperty()));
+    }
+
     Optional<Integer> getIterationLevel() {
-        Optional<Integer> maxIterations ;
+        Optional<Integer> maxIterations;
         if (model.isGuessIteration()) {
-            maxIterations = Optional.empty() ;
+            maxIterations = Optional.empty();
         } else {
-            int userIterationLevel = Math.max(10, iterationLevelFormatter.getValue());                  
+            int userIterationLevel = Math.max(10,iterationLevelFormatter.getValue());
             maxIterations = Optional.of(userIterationLevel);
         }
         return maxIterations;
