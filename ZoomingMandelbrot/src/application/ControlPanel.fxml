@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextFormatter?>
+<?import javafx.util.converter.IntegerStringConverter?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ProgressBar?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" spacing="5" fx:id="root"
+	fx:controller="application.ControlPanelController" styleClass="controls">
+	
+	<Label fx:id="sizeLabel" />
+	<Label fx:id="fpsLabel" />
+	<HBox spacing="10" styleClass="controls">
+		<Label text="Iteration Level: "/>
+		<TextField fx:id="iterationTextField" />
+		<CheckBox text="Guess" fx:id="guessIterationLevel" selected="true" />
+	</HBox>
+	<ProgressBar fx:id="renderProgressBar"/>
+</VBox>
+

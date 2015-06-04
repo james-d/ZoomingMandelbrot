@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="help.css" />
+<title>Mandelbrot Set Explorer Help</title>
+</head>
+<body>
+	<h2 id="top">Mandelbrot Set Application</h2>
+	<p>This application allows you to explore the Mandelbrot Set.</p>
+	<h3>Functionality</h3>
+	<ul>
+		<li><a href="#user_controls">User Controls</a></li>
+		<li><a href="#zooming">Zooming</a></li>
+		<li><a href="#iteration">Iteration Level</a></li>
+		<li><a href="#julia">Julia Sets</a></li>
+		<li><a href="#export">Image Export</a></li>
+		<li><a href="#control">Control Panel</a></li>
+		<li><a href="#keyboard_shortcuts">Summary of keyboard
+				shortcuts</a></li>
+	</ul>
+	<h3 id="user_controls">User Controls</h3>
+	<p>Most functionality is available from either a context menu
+		(which you can bring up by right-clicking on the application) or via
+		keyboard shortcuts (using the Control key on a computer running
+		Windows, or Command on an Apple Mac). Zooming functionality is
+		available by double-clicking the Mandelbrot image. The sections below
+		describe the functionality and the context menu items or keyboard
+		shortcuts used to invoke it.</p>
+	<h3 id="zooming">Zooming</h3>
+	<div class="toplink">
+		(<a href="#top">Top</a>)
+	</div>
+	<table>
+		<tr>
+			<th>Functionality</th>
+			<th>Controls</th>
+			<th>Notes</th>
+		</tr>
+		<tr>
+			<td>Zoom in by a factor of 4</td>
+			<td>Double-click on the zoom point</td>
+			<td>Will zoom out if "Reverse Zoom" is enabled</td>
+		</tr>
+		<tr>
+			<td>Zoom out by a factor of 4</td>
+			<td>Shift-double-click on the zoom point</td>
+			<td>Will zoom in if "Reverse Zoom" is enabled</td>
+		</tr>
+		<tr>
+			<td>Reverse zoom</td>
+			<td>Select from context menu (right-click) or Ctrl-Z</td>
+			<td>Reverses double-click and shift-double-click</td>
+		</tr>
+		<tr>
+			<td>Reset</td>
+			<td>Select from the context menu (right-click) or Ctrl-R</td>
+			<td>Resets to the original image</td>
+		</tr>
+	</table>
+
+	<h3 id="iteration">Iteration Level</h3>
+	<div class="toplink">
+		(<a href="#top">Top</a>)
+	</div>
+	<table>
+		<tr>
+			<th>Functionality</th>
+			<th>Controls</th>
+			<th>Notes</th>
+		</tr>
+		<tr>
+			<td>Guess iteration level automatically</td>
+			<td>Check the "Guess" check box next to the iteration field in
+				the control panel</td>
+			<td>Makes a best-effort attempt to find a good iteration level,
+				based on the size of the viewing portion only.</td>
+		</tr>
+		<tr>
+			<td>Manually enter iteration level</td>
+			<td>With the "Guess" checkbox unchecked, enter the iteration
+				level in the text field. A minimum level of 10 is enforced.</td>
+			<td>The iteration level takes effect on the next computation of
+				the Mandelbrot set.</td>
+		</tr>
+	</table>
+
+	<h3 id="julia">Julia Sets</h3>
+	<div class="toplink">
+		(<a href="#top">Top</a>)
+	</div>
+	<table>
+		<tr>
+			<th>Functionality</th>
+			<th>Controls</th>
+			<th>Notes</th>
+		</tr>
+		<tr>
+			<td>Toggle tracking of Julia Set</td>
+			<td>Select from the context menu (right-click) or Ctrl-J</td>
+			<td>Useful for "freezing" the Julia Set display, for example prior to exporting the image</td>
+		</tr>
+			
+
+	</table>
+
+<h3 id="export">Image Export </h3>
+<div class="toplink">(<a href="#top">Top</a>)</div>
+<table>
+<tr>
+			<th>Functionality</th>
+			<th>Controls</th>
+			<th>Notes</th>
+		</tr>
+<tr>
+<td>Export Mandelbrot Set image</td>
+<td>From the context menu (right-click menu) or by Ctrl-S</td>
+<td>Saves a png format image of the current Mandelbrot Set</td>
+</tr>
+<tr>
+<td>Export Julia Set image</td>
+<td>From the context menu (right-click menu) or by Ctrl-Shift-S</td>
+<td>Saves a png format image of the current Julia Set</td>
+</tr>
+</table>
+
+<h3 id="control">Control Panel </h3>
+<div class="toplink">(<a href="#top">Top</a>)</div>
+<table>
+<tr>
+			<th>Display</th>
+			<th>Description</th>
+		</tr>
+<tr>
+<td>Size</td>
+<td>Shows the size (width, which is equal to the height) of the current Mandelbrot set image</td>
+</tr>
+<tr>
+<td>Frames per second</td>
+<td>During zooming, shows (approximately) the number of frames being generated every second.</td>
+</tr>
+<tr>
+<td>Progress bar.</td>
+<td>During zooming, shows the progress of the zoom</td>
+</tr>
+</table>
+
+<h3 id="keyboard_shortcuts">Summary of keyboard shortcuts</h3>
+<div class="toplink">(<a href="#top">Top</a>)</div>
+<p>These shortcuts are listed as Ctrl-Key. On an Apple Mac, use Command-Key.</p>
+<table>
+<tr>
+			<th>Shortcut</th>
+			<th>Action</th>
+		</tr>
+<tr>
+<td>Ctrl-J</td>
+<td>Toggle tracking Julia Set</td>
+</tr>
+<tr>
+<td>Ctrl-Z</td>
+<td>Toggle Zoom In/Out</td>
+</tr>
+<tr>
+<td>Ctrl-R</td>
+<td>Reset to original image</td>
+</tr>
+<tr>
+<td>Ctrl-S</td>
+<td>Save Mandelbrot Image</td>
+</tr>
+<tr>
+<td>Shift-Ctrl-S</td>
+<td>Save Julia Image</td>
+</tr>
+<tr>
+<td>Ctrl-H</td>
+<td>Show this help page</td>
+</tr>
+<tr>
+<td>Ctrl-Q</td>
+<td>Exit the application</td>
+</tr>
+</table>
+</body>
+</html>

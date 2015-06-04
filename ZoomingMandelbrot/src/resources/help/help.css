@@ -1,0 +1,30 @@
+body {
+	font-family: verdana, garamond ;
+}
+
+a {
+	text-decoration: none;
+}
+
+table {
+	border-collapse: collapse ;
+	padding-top: 12pt ;
+}
+table, th, td {
+	border: 1px solid black ;
+}
+td {
+	vertical-align: top	;
+	padding: 4pt ;
+}
+table tr:nth-child(2n) td {
+	background-color: #f0f8ff ;
+}
+table tr th {
+	background-color: cornflowerblue ;
+	color: white ;
+}
+.toplink {
+	font-size: 0.8em ;
+	padding-bottom: 1em ;
+}

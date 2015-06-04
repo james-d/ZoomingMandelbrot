@@ -1,0 +1,4 @@
+.controls , .buttons {
+	-fx-alignment: center ;
+	-fx-padding: 5px ;
+}
