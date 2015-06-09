@@ -48,6 +48,12 @@ public class ControlPanelController {
         setupIterationControl();
         setupProgressBarBinding();
     }
+    
+    @FXML
+    private void updateIterationLevel() {
+        model.updateMaxIterations(getIterationLevel().orElseThrow(() ->
+                new IllegalStateException("Updating iteration level when \"Guess\" is selected")));
+    }
 
     private void setUpSizeLabelBinding() {
         model.currentMandelbrotProperty().addListener(
@@ -96,7 +102,10 @@ public class ControlPanelController {
         if (model.isGuessIteration()) {
             maxIterations = Optional.empty();
         } else {
-            int userIterationLevel = Math.max(10,iterationLevelFormatter.getValue());
+            Integer userIterationLevel = iterationLevelFormatter.getValue();
+            if (userIterationLevel == null || userIterationLevel < 10) {
+                userIterationLevel = 10 ;
+            }
             maxIterations = Optional.of(userIterationLevel);
         }
         return maxIterations;

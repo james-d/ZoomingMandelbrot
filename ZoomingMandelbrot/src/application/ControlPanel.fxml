@@ -16,7 +16,7 @@
 	<Label fx:id="fpsLabel" />
 	<HBox spacing="10" styleClass="controls">
 		<Label text="Iteration Level: " />
-		<TextField fx:id="iterationTextField" />
+		<TextField fx:id="iterationTextField" onAction="#updateIterationLevel" />
 		<CheckBox text="Guess" fx:id="guessIterationLevel" selected="true" />
 	</HBox>
 	<ProgressBar fx:id="renderProgressBar" />

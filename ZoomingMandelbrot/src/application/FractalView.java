@@ -105,6 +105,7 @@ public abstract class FractalView {
                     }
                     pw.setPixels(0, startRow, width, endRow - startRow,
                             PixelFormat.getIntArgbInstance(), pixels, 0, width);
+                    
                 } finally {
                     latch.countDown();
                 }

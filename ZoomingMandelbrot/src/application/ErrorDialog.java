@@ -3,6 +3,8 @@ package application;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javafx.animation.PauseTransition;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 public class ErrorDialog {
     
@@ -37,21 +40,22 @@ public class ErrorDialog {
         
         TitledPane stackTracePane = new TitledPane();
         stackTracePane.setExpanded(false);
+//        PauseTransition resizeTimer = new PauseTransition(Duration.millis(100));
+//        resizeTimer.setOnFinished(e -> {
+//            resize(stackTracePane);
+//        });
         stackTracePane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-            Scene scene = stackTracePane.getScene();
-            if (scene != null) {
-                Window window = scene.getWindow();
-                if (window != null) {
-                    window.sizeToScene();
-                }
-            }
+            resize(stackTracePane);
+//            resizeTimer.playFromStart();
         });
+        
         stackTracePane.setText("Details");
         ScrollPane scroller = new ScrollPane(new HBox(stackTraceLabel));
-        scroller.setFitToWidth(true);
+        scroller.setMaxHeight(400);
         stackTracePane.setContent(scroller);
         
         VBox root = new VBox(5, messageLabel, excMessageLabel, stackTracePane);
+        root.setMaxWidth(400);
         root.getStyleClass().add("error-pane");
         
         
@@ -64,6 +68,16 @@ public class ErrorDialog {
         view = new BorderPane(root, null, null, buttons, null);
         
     }
+
+    private void resize(Node node) {
+        Scene scene = node.getScene();
+        if (scene != null) {
+            Window window = scene.getWindow();
+            if (window != null) {
+                window.sizeToScene();
+            }
+        }
+    }
     
     public void show() {
         Scene scene = new Scene(view);
@@ -74,6 +88,8 @@ public class ErrorDialog {
         stage.setScene(scene);
         stage.setX(owner.getX() + 50);
         stage.setY(owner.getY() + 50);
+        
+        stage.setResizable(false);
         stage.show();
     }
     

@@ -71,7 +71,7 @@ public class Model {
     public Model() {
         zoomingInProgress.bind(framesPendingRendering.greaterThan(0));
         
-        Thread computeThread = new Thread(() -> {
+        Runnable computeThread = () -> {
             try {
                 while (true) {
                     MandelbrotView mandelbrot = computationQueue.take();
@@ -81,8 +81,7 @@ public class Model {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-        });
-        computeThread.setDaemon(true);
+        };
         exec.execute(computeThread);
     }
     
@@ -233,10 +232,33 @@ public class Model {
      */
     public void reset() {
         try {
-            computationQueue.put(createMandelbrotView(-0.5, 0, 3, 3, 50));
+            computationQueue.put(createMandelbrotView(-0.5, 0, 3, 3, estimateIterationLevel(3)));
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    /**
+     * Recompute with the current bounds and a new iteration level.
+     * @param maxIterations The new iteration level.
+     */
+    public void updateMaxIterations(int maxIterations) {
+        if (maxIterations != getCurrentMandelbrot().getIterationLevel()) {
+            try {
+                Bounds currentBounds = getCurrentMandelbrot().getBounds();
+                double centerX = currentBounds.getMinX()
+                        + currentBounds.getWidth() / 2;
+                double centerY = currentBounds.getMinY()
+                        + currentBounds.getHeight() / 2;
+                double width = currentBounds.getWidth();
+                double height = currentBounds.getHeight();
+                computationQueue.put(createMandelbrotView(centerX, centerY,
+                        width, height, maxIterations));
+            } catch (InterruptedException exc) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        
     }
 
     /**
@@ -275,7 +297,7 @@ public class Model {
             try {
 
                 double width = currentWidth + i * frameDeltaWidth;
-                int iterationLevel = maxIterations.orElse(estimateIterationLevel(1 / width));
+                int iterationLevel = maxIterations.orElse(estimateIterationLevel(width));
 
                 computationQueue.put(createMandelbrotView(
                         currentX + i * frameDeltaX, 
@@ -322,8 +344,11 @@ public class Model {
         return mandelbrot;
     }
 
-    private int estimateIterationLevel(double scale) {
-        return (int) (Math.sqrt(2 * Math.sqrt(Math.abs(1 - Math.sqrt(6.66 * scale)))) * 66.6);
+    private int estimateIterationLevel(double size) {
+        if (size > 3) {
+            return 50 ;
+        }
+        return (int) (100 * Math.pow(2.5 / Math.sqrt(size) - 1, 0.25));
     }
 
 
